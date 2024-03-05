@@ -4,7 +4,7 @@ import sys
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
-
+import d
 
 
 class MainWindow(QMainWindow):
@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         tabs.setTabPosition(QTabWidget.West)
         tabs.setMovable(True)
         # for n, color in enumerate(["white", "white", "white", "white"]):
+        tabs.addTab(Color("white"),"Repo")
         tabs.addTab(Color("white"), "Menu")
         tabs.addTab(Color("blue"), "Branch")
         tabs.addTab(Color("green"), "Tag")
@@ -27,7 +28,8 @@ class MainWindow(QMainWindow):
 
         #ToolBar
         toolbar = QToolBar("My main toolbar")
-        toolbar.setIconSize(QSize(16,16))
+        toolbar.setIconSize(QSize(32,32))
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.addToolBar(toolbar)
 
         #Action_Refresh
@@ -69,8 +71,8 @@ class MainWindow(QMainWindow):
         #Action_Pull
         pull_action = QAction(QIcon("./icon/Pull.png"), "Pull", self)
         pull_action.setStatusTip("Pull")
-        pull_action.triggered.connect(self.onMyToolBarButtonClick)
-        pull_action.setCheckable(True)
+        pull_action.triggered.connect(self.onPullButtonClick)
+        pull_action.setCheckable(False)
         pull_action.setShortcut(QKeySequence())   
         toolbar.addAction(pull_action)
         toolbar.addSeparator()
@@ -93,6 +95,15 @@ class MainWindow(QMainWindow):
         toolbar.addAction(bug_action)
         toolbar.addSeparator()
 
+         #Action_New
+        new_action = QAction(QIcon(), "New", self)
+        new_action.setStatusTip("New something...")
+        new_action.triggered.connect(self.onMyToolBarButtonClick)
+        new_action.setCheckable(False)
+        new_action.setShortcut(QKeySequence())   
+        new_action.setEnabled(False)
+        # toolbar.addAction(new_action)
+        # toolbar.addSeparator()
         self.setStatusBar(QStatusBar(self))
         
         #MenuBar
@@ -100,9 +111,9 @@ class MainWindow(QMainWindow):
 
         #File
         file_menu = menu.addMenu("&File")
-        file_menu.addAction(pull_action)
+        file_menu.addAction(new_action)
         file_menu.addSeparator()
-        file_submenu = file_menu.addMenu("Submenu")
+        file_submenu = file_menu.addMenu("New")
         file_submenu.addAction(pull_action)
 
         #Checkout
@@ -129,15 +140,19 @@ class MainWindow(QMainWindow):
     def onMyToolBarButtonClick(self, s):
         print("click", s)
 
-class Color(QWidget):
+    def onPullButtonClick(self, s):
+        self.subwindow=d.AnotherWindow("Pull Engine")    
+        self.subwindow.show()
+        print("click", s)
 
+class Color(QWidget):
     def __init__(self, color):
         super(Color, self).__init__()
         self.setAutoFillBackground(True)
-
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
+        
 
 
 if __name__ == "__main__":
